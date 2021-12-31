@@ -1,4 +1,4 @@
-# 集成一下组件:
+# 集成以下组件:
 
 * dcat/laravel-admin (自定义登录页面)
 * "smartins/passport-multiauth": "^7.0"(自带laravel/passport)
