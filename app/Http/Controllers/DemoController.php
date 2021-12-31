@@ -6,9 +6,9 @@
 
 namespace App\Http\Controllers;
 
-
-use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Google2FA;
 
 class DemoController
 {
@@ -35,5 +35,16 @@ class DemoController
 //        var_dump($data);
 
         return $res;
+    }
+
+    public function googlekey()
+    {
+        return Google2FA::generateSecretKey();
+    }
+
+    public function checkKey(Request $request)
+    {
+        $inputCode = $request->get("key");
+        return Google2FA::verify($inputCode, "TDNEOH7DKYK43JMA") ? "true" : "false";
     }
 }

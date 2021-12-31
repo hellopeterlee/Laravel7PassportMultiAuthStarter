@@ -27,13 +27,18 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function getAvatar()
+    {
+        return "/vendor/dcat-admin/images/default-avatar.jpg";
+    }
+
     /**
      * 默认是使用email字段查找用户，这里覆盖findForPassport,使用name字段在查找用户
      * @throws LeagueException
      */
     public function findForPassport($username)
     {
-        $user = $this->where('name', $username)->first();
+        $user = $this->where('username', $username)->first();
         if (!$user) {
             throw new LeagueException('User account is not activated', 6, 'account_inactive', 401);
         }

@@ -10,12 +10,14 @@
     "require": {
         "php": "^7.2.5",
         "dcat/laravel-admin": "2.*",
+        "endroid/qr-code": "^4.4",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
         "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
         "lcobucci/jwt": "3.3.3",
+        "pragmarx/google2fa-laravel": "^2.0",
         "smartins/passport-multiauth": "^7.0"
     },
     "require-dev": {

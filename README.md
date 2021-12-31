@@ -1,9 +1,9 @@
 # 集成一下组件:
 
-* dcat/laravel-admin
+* dcat/laravel-admin (自定义登录页面)
 * "smartins/passport-multiauth": "^7.0"(自带laravel/passport)
 * fruitcake/laravel-cors
-* pragmarx/google2fa-laravel
+* pragmarx/google2fa-laravel (登录页面加入谷歌验证码验证逻辑)
 
 系统自带了*lcobucci/jwt4.5*版本,安装*smartins/passport-multiauth:^7.0*后会有冲突,需要强行在composer.json开中加入
 
@@ -330,5 +330,117 @@ public function user(Request $request)
 }
 即可调用user_api相关api了
 ~~~
+
+---
+##dact-admin多应用 (多后台)
+~~~
+php artisan admin:app UserAdmin
+
+#在 config/admin.php 中添加
+return [
+    ...
+
+    'multi_app' => [
+        // 与新应用的配置文件名称一致
+        // 设置为true启用，false则是停用
+        'user-admin' => true,
+    ],
+
+];
+~~~
+
+添加新的菜单表:
+~~~
+CREATE TABLE `user_menu` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) NOT NULL DEFAULT '0',
+  `order` int(11) NOT NULL DEFAULT '0',
+  `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `icon` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `uri` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+~~~
+
+创建新的菜单模型
+~~~
+<?php
+namespace App\Models;
+
+use Dcat\Admin\Models\Menu;
+
+class UserMenu extends Menu
+{
+    protected $table = 'user_menu';
+}
+~~~
+
+编辑 config/user-admin.php
+~~~
+return [
+    ...
+
+    'database' => [
+
+      ...
+
+      // 写入新的模型和菜单表
+      'menu_table' => 'user_menu',
+      'menu_model' => App\Models\UserMenu::class,
+      ...
+      
+    ],
+];
+~~~
+> 这样新的应用就可以使用独立的菜单功能了
+
+更改用户和权限,这里关闭所有权限相关的配置,config/user-admin.php
+~~~
+   ...
+
+   'auth' => [
+        'enable' => false, #关闭权限认证
+
+        'controller' => App\UserAdmin\Controllers\AuthController::class,
+
+        'guard' => 'user-admin',
+
+        'guards' => [
+            'user-admin' => [
+                'driver'   => 'session',
+                'provider' => 'user-admin',
+            ],
+        ],
+
+        'providers' => [
+            'user-admin' => [
+                'driver' => 'eloquent',
+                'model'  => \App\Models\User::class
+            ],
+        ],
+
+        ...
+    ],
+    
+    ...
+    
+    'permission' => [
+        // Whether enable permission.
+        'enable' => false, #关闭权限认证
+    ],
+~~~
+
+添加用户和菜单项
+~~~
+INSERT INTO `demo_me`.`users`(`id`, `username`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES (1, 'test', 'billy.flatley@example.com', '2021-12-29 06:41:20', '$2y$10$fkranF.Nq9FO4UJo370CVOSUXOfocYe28X8hACPygGzoMy9XfZwaa', 'dYhQMHGOJb5gI1Pay1mucAWX4dmDjr1FGuRJHdOPxjjBgzbIYHaKdW5BccHr', '2021-12-29 06:41:22', '2021-12-29 06:41:22');
+
+INSERT INTO `demo_me`.`user_menu`(`id`, `parent_id`, `order`, `title`, `icon`, `uri`, `created_at`, `updated_at`) VALUES (1, 0, 1, '首页', 'feather icon-bar-chart-2', '/', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+INSERT INTO `demo_me`.`user_menu`(`id`, `parent_id`, `order`, `title`, `icon`, `uri`, `created_at`, `updated_at`) VALUES (2, 0, 2, 'demo', 'feather icon-bar-chart-2', '/demo', '0000-00-00 00:00:00', '0000-00-00 00:00:00');
+~~~
+
+访问 http://demo.me/user-admin/
+test/111111
 
 

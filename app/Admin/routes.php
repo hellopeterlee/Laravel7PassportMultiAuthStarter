@@ -14,4 +14,8 @@ Route::group([
 
     $router->get('/', 'HomeController@index');
 
+    $router->group(['prefix' => 'googleAuth'], function ($router) {
+        $router->get('', 'GoogleTokenController@index')->name('admin.googleauth');
+        $router->post('checkToken', 'GoogleTokenController@checkToken')->name('admin.googleauth.check');
+    });
 });

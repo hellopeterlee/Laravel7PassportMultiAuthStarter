@@ -22,4 +22,9 @@ Route::get("/login", function () {
     return "login";
 })->name("login");
 
+Route::get("/qrcode","QrcodeController@index")->name('qrcode');
+
+
 Route::get("/demo/oauth","DemoController@oauth");
+Route::get("/demo/googlekey","DemoController@googlekey");
+Route::get("/demo/checkKey","DemoController@checkKey");

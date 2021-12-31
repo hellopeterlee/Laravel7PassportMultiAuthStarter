@@ -144,7 +144,7 @@ return [
         'providers' => [
             'admin' => [
                 'driver' => 'eloquent',
-                'model'  => Dcat\Admin\Models\Administrator::class,
+                'model'  => \App\Models\AdminUser::class,
             ],
         ],
 
@@ -364,4 +364,9 @@ return [
         // the extension files will be generated in this directory.
         'dir' => base_path('dcat-admin-extensions'),
     ],
+
+    'multi_app' => [
+        'user-admin' => true,
+    ],
+
 ];
